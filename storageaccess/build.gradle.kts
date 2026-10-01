@@ -44,7 +44,7 @@ afterEvaluate {
                 from(components["release"])
                 groupId = "io.planck.storageaccess"
                 artifactId = "storageaccess"
-                version = "1.2.0"
+                version = "1.2.1"
             }
         }
     }
