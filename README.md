@@ -1,6 +1,9 @@
 # StorageAccess
 
 <p align="left">
+  <a href="https://jitpack.io/#WhiredPlanck/StorageAccess">
+    <img alt="StorageAccess" src="https://img.shields.io/jitpack/version/com.github.WhiredPlanck/StorageAccess">
+  </a>
   <a href="https://github.com/WhiredPlanck/StorageAccess/issues"><img src="https://img.shields.io/github/issues/WhiredPlanck/StorageAccess">
   </a>
   <img src="https://img.shields.io/github/license/WhiredPlanck/StorageAccess">
@@ -13,6 +16,26 @@ permissions, file management with recursive walk, streamed read/write, file desc
 a single `StorageAccess` class. Ask the user once, keep the grant forever, and work
 painless with their files in a handful of lines instead of hundreds of lines of
 template code with `DocumentContract`.
+
+Add StorageAccess into your project from JitPack:
+
+1. Setup JitPack repository
+```kts
+dependencyResolutionManagement {
+	repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+	repositories {
+		mavenCentral()
+		maven { url = uri("https://jitpack.io") }
+	}
+}
+```
+
+2. Add dependency
+```kts
+dependencies {
+	implementation("com.github.WhiredPlanck:StorageAccess:1.0.0")
+}
+```
 
 ## Highlights
 
@@ -99,7 +122,7 @@ try {
 
 ## Credits
 
-- [`saf`](https://github.com/lognjais/saf) - A Flutter plugin that leverages SAF API to get access and perform the operations on files and folders, developed by [`lognjais (jvoltci)`](https://github.com/lognjais). Referenced for API design (base on v2 API) and README.
+- [`saf`](https://github.com/lognjais/saf) - A Flutter plugin that leverages SAF API to get access and perform the operations on files and folders, developed by [lognjais (jvoltci)](https://github.com/lognjais). Referenced for API design (base on v2 API) and README.
 - [`SimpleStorage`](https://github.com/anggrayudi/SimpleStorage) - Another library to help simplify Android SAF for file management, developed by [anggrayudi](https://github.com/anggrayudi). Referenced for pickers and dedicated ActivityResultContract implementations.
 
 ---
