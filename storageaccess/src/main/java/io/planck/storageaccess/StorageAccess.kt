@@ -323,7 +323,9 @@ public class StorageAccess(caller: ActivityResultCaller) {
        ): StorageDocument = withContext(Dispatchers.IO) {
             writeFile(dirUri, name, mime, overwrite, append) {
                 source.collect { data ->
-                    it.write(data)
+                    withContext(Dispatchers.IO) {
+                        it.write(data)
+                    }
                 }
             }
        }
