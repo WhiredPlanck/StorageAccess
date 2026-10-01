@@ -302,21 +302,12 @@ public class StorageAccess(caller: ActivityResultCaller) {
             }
         }.flowOn(Dispatchers.IO)
 
-        /** Writes a file non-null named [name] inside [uri] with OutputStream,
-         * or treats [uri] as the document's uri when [name] is null. */
+        /** Writes the file [target] with [OutputStream] */
         public suspend fun writeFile(
-            uri: Uri,
-            name: String? = null,
-            mime: String,
-            overwrite: Boolean = false,
+            target: Uri,
             append: Boolean = false,
             block: suspend (OutputStream) -> Unit,
         ): StorageDocument {
-            val target = if (name != null) {
-                resolveWriteTarget(uri, name, mime, overwrite, append).first
-            } else {
-                uri
-            }
             val mode = if (append) "wa" else "wt"
             val out = ctx.contentResolver.openOutputStream(target, mode)
                 ?: throw Exception("Cannot open output $target")
@@ -326,15 +317,27 @@ public class StorageAccess(caller: ActivityResultCaller) {
                 ?: throw StorageNotFoundException("Written document missing")
         }
 
-        /** Writes [data] as a file named non-null [name] inside [uri],
-         * or treats [uri] as the document's uri when [name] is null.
+        /** Writes a file named [name] inside [dirUri] with [OutputStream]. */
+        public suspend fun writeFile(
+            dirUri: Uri,
+            name: String,
+            mime: String,
+            overwrite: Boolean = false,
+            append: Boolean = false,
+            block: suspend (OutputStream) -> Unit,
+        ): StorageDocument {
+            val (target, _) = resolveWriteTarget(dirUri, name, mime, overwrite, append)
+            return writeFile(target, append, block)
+        }
+
+        /** Writes [data] as a file named [name] inside [uri].
          *
          * By default a name collision creates an auto-renamed file
          * (SAF behavior, e.g. `file (1).txt`); pass `overwrite = true` to truncate
          * the existing document, or `append = true` to append to it. */
         public suspend fun writeFileBytes(
             uri: Uri,
-            name: String? = null,
+            name: String,
             mime: String,
             data: ByteArray,
             overwrite: Boolean = false,
@@ -346,7 +349,7 @@ public class StorageAccess(caller: ActivityResultCaller) {
         /** Writes a whole [source] stream as a file in one call */
        public suspend fun writeFileStream(
             dirUri: Uri,
-            name: String? = null,
+            name: String,
             mime: String,
             source: Flow<ByteArray>,
             overwrite: Boolean = false,
