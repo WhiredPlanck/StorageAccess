@@ -26,11 +26,25 @@ public class StorageAccess(caller: ActivityResultCaller) {
     private val mutex = Mutex()
 
     private var directoryContinuation: CancellableContinuation<StorageDocument?>? = null
+    private var fileContinuation: CancellableContinuation<StorageDocument?>? = null
+    private var filesContinuation: CancellableContinuation<List<StorageDocument>>? = null
 
     private val directoryLauncher =
         caller.registerForActivityResult(StorageResultContracts.OpenDirectory()) { result ->
             directoryContinuation?.resumeWith(result)
             directoryContinuation = null
+        }
+
+    private val fileLauncher =
+        caller.registerForActivityResult(StorageResultContracts.OpenFile()) { result ->
+            fileContinuation?.resumeWith(result)
+            fileContinuation = null
+        }
+
+    private val filesLauncher =
+        caller.registerForActivityResult(StorageResultContracts.OpenFiles()) { result ->
+            filesContinuation?.resumeWith(result)
+            filesContinuation = null
         }
 
     /** Opens the system directory picker (`ACTION_OPEN_DOCUMENT_TREE`).
@@ -43,15 +57,55 @@ public class StorageAccess(caller: ActivityResultCaller) {
         writePermission: Boolean = true,
         persistablePermission: Boolean = true,
     ): StorageDocument? = mutex.withLock {
-        val args = StorageResultContracts.OpenDirectory.Args(
+        val opts = StorageResultContracts.OpenDirectory.Options(
             initialUri, writePermission, persistablePermission
         )
         try {
-            awaitResult(directoryLauncher, args) {
+            awaitResult(directoryLauncher, opts) {
                 directoryContinuation = it
             }
         } catch (_: ActivityNotFoundException) {
             null
+        }
+    }
+
+    /** Opens the system file picker (`ACTION_OPEN_DOCUMENT`) for one file.
+     *
+     * Returns `null` if the user cancelled. */
+    public suspend fun pickFile(
+        initialUri: Uri? = null,
+        vararg mimeTypes: String = emptyArray(),
+        persistablePermission: Boolean = false
+    ): StorageDocument? = mutex.withLock {
+        val opts = StorageResultContracts.OpenDocumentOptions(
+            initialUri, mimeTypes.toList(), persistablePermission
+        )
+        try {
+            awaitResult(fileLauncher, opts) {
+                fileContinuation = it
+            }
+        } catch (_: ActivityNotFoundException) {
+            null
+        }
+    }
+
+    /** Opens the system file picker allowing multiple selection.
+     *
+     * Returns an empty list if the user cancelled. */
+    public suspend fun pickFiles(
+        initialUri: Uri? = null,
+        vararg mimeTypes: String = emptyArray(),
+        persistablePermission: Boolean = false
+    ): List<StorageDocument> = mutex.withLock {
+        val opts = StorageResultContracts.OpenDocumentOptions(
+            initialUri, mimeTypes.toList(), persistablePermission
+        )
+        try {
+            awaitResult(filesLauncher, opts) {
+                filesContinuation = it
+            }
+        } catch (_: ActivityNotFoundException) {
+            emptyList()
         }
     }
 
