@@ -158,6 +158,42 @@ public class StorageResultContracts private constructor() {
         }
     }
 
+    public class CreateFile : ActivityResultContract<CreateFile.Options, Result<StorageDocument?>>() {
+        override fun createIntent(
+            context: Context,
+            input: Options
+        ): Intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+            type = input.mimeType
+            input.filename?.let { putExtra(Intent.EXTRA_TITLE, it) }
+            val initialUri = input.initialUri
+            if (initialUri != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                putExtra(DocumentsContract.EXTRA_INITIAL_URI, initialUri)
+            }
+        }
+
+        override fun parseResult(
+            resultCode: Int,
+            intent: Intent?
+        ): Result<StorageDocument?> {
+            if (resultCode != Activity.RESULT_OK || intent == null) {
+                return Result.success(null)
+            }
+            return try {
+                val uri = intent.data ?: return Result.success(null)
+                val value = StorageDocs.stat(ctx, uri)
+                Result.success(value)
+            } catch (e: Throwable) {
+                Result.failure(e)
+            }
+        }
+
+        public data class Options(
+            val initialUri: Uri?,
+            val filename: String?,
+            val mimeType: String,
+        )
+    }
+
     private companion object {
         private val ctx get() = StorageContextProvider.getContext()
 

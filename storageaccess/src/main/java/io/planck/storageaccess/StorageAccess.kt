@@ -28,6 +28,7 @@ public class StorageAccess(caller: ActivityResultCaller) {
     private var directoryContinuation: CancellableContinuation<StorageDocument?>? = null
     private var fileContinuation: CancellableContinuation<StorageDocument?>? = null
     private var filesContinuation: CancellableContinuation<List<StorageDocument>>? = null
+    private var creationContinuation: CancellableContinuation<StorageDocument?>? = null
 
     private val directoryLauncher =
         caller.registerForActivityResult(StorageResultContracts.OpenDirectory()) { result ->
@@ -45,6 +46,12 @@ public class StorageAccess(caller: ActivityResultCaller) {
         caller.registerForActivityResult(StorageResultContracts.OpenFiles()) { result ->
             filesContinuation?.resumeWith(result)
             filesContinuation = null
+        }
+
+    private val creationLauncher =
+        caller.registerForActivityResult(StorageResultContracts.CreateFile()) { result ->
+            creationContinuation?.resumeWith(result)
+            creationContinuation = null
         }
 
     /** Opens the system directory picker (`ACTION_OPEN_DOCUMENT_TREE`).
@@ -106,6 +113,23 @@ public class StorageAccess(caller: ActivityResultCaller) {
             }
         } catch (_: ActivityNotFoundException) {
             emptyList()
+        }
+    }
+
+    public suspend fun createFile(
+        initialUri: Uri? = null,
+        filename: String? = null,
+        mimeType: String
+    ): StorageDocument? = mutex.withLock {
+        val opts = StorageResultContracts.CreateFile.Options(
+            initialUri, filename, mimeType
+        )
+        try {
+            awaitResult(creationLauncher, opts) {
+                creationContinuation = it
+            }
+        } catch (_: ActivityNotFoundException) {
+            null
         }
     }
 
