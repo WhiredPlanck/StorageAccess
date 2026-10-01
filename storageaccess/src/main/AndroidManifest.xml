@@ -6,7 +6,8 @@
             android:name=".StorageContextProvider"
             android:authorities="io.planck.storageaccess.StorageContextProvider"
             android:enabled="true"
-            android:exported="false"></provider>
+            android:exported="false">
+        </provider>
     </application>
 
 </manifest>
