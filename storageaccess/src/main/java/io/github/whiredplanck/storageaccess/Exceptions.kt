@@ -1,4 +1,4 @@
-package io.planck.storageaccess
+package io.github.whiredplanck.storageaccess
 
 public class StorageAlreadyExistsException(message: String) : Exception(message)
 

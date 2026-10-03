@@ -1,4 +1,4 @@
-package io.planck.storageaccess
+package io.github.whiredplanck.storageaccess
 
 import android.net.Uri
 import android.os.ParcelFileDescriptor
