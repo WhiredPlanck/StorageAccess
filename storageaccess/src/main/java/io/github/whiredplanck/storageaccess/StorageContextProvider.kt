@@ -1,4 +1,4 @@
-package io.planck.storageaccess
+package io.github.whiredplanck.storageaccess
 
 import android.content.ContentProvider
 import android.content.ContentValues

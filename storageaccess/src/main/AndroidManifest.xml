@@ -4,7 +4,7 @@
     <application>
         <provider
             android:name=".StorageContextProvider"
-            android:authorities="io.planck.storageaccess.StorageContextProvider"
+            android:authorities="io.github.whiredplanck.storageaccess.StorageContextProvider"
             android:enabled="true"
             android:exported="false">
         </provider>

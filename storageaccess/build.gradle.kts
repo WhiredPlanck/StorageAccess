@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "io.planck.storageaccess"
+    namespace = "io.github.whiredplanck.storageaccess"
     compileSdk {
         version = release(37)
     }
@@ -42,7 +42,7 @@ afterEvaluate {
         publications {
             register<MavenPublication>("release") {
                 from(components["release"])
-                groupId = "io.planck.storageaccess"
+                groupId = "io.github.whiredplanck"
                 artifactId = "storageaccess"
                 version = "1.2.1"
             }
