@@ -303,18 +303,16 @@ public class StorageAccess(caller: ActivityResultCaller) {
         }.flowOn(Dispatchers.IO)
 
         /** Writes the file [target] with [OutputStream] */
-        public suspend fun writeFile(
+        public suspend fun <R> writeFile(
             target: Uri,
             append: Boolean = false,
-            block: suspend (OutputStream) -> Unit,
-        ): StorageDocument {
+            block: suspend (OutputStream) -> R,
+        ): R {
             val mode = if (append) "wa" else "wt"
             val out = ctx.contentResolver.openOutputStream(target, mode)
                 ?: throw Exception("Cannot open output $target")
             truncateForOverwrite(out, append)
-            out.use { block(it) }
-            return StorageDocs.stat(ctx, target)
-                ?: throw StorageNotFoundException("Written document missing")
+            return out.use { block(it) }
         }
 
         /** Writes a file named [name] inside [dirUri] with [OutputStream]. */
@@ -327,7 +325,11 @@ public class StorageAccess(caller: ActivityResultCaller) {
             block: suspend (OutputStream) -> Unit,
         ): StorageDocument {
             val (target, _) = resolveWriteTarget(dirUri, name, mime, overwrite, append)
-            return writeFile(target, append, block)
+            return writeFile(target, append) {
+                block(it)
+                StorageDocs.stat(ctx, target)
+                    ?: throw StorageNotFoundException("Written document missing")
+            }
         }
 
         /** Writes [data] as a file named [name] inside [uri].
