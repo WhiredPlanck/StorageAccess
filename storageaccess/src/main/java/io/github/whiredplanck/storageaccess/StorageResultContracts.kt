@@ -195,7 +195,7 @@ public class StorageResultContracts private constructor() {
     }
 
     private companion object {
-        private val ctx get() = StorageContextProvider.getContext()
+        private val ctx get() = StorageAccessInitializer.getContext()
 
         private fun takePersistable(uri: Uri, write: Boolean) {
             var flags = Intent.FLAG_GRANT_READ_URI_PERMISSION

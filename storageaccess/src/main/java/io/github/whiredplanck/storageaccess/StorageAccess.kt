@@ -149,7 +149,7 @@ public class StorageAccess(caller: ActivityResultCaller) {
     }
 
     public companion object {
-        private val ctx get() = StorageContextProvider.getContext()
+        private val ctx get() = StorageAccessInitializer.getContext()
         
         /** Lists all URI permissions the app currently persists. */
         public fun persistedPermissions(): List<StoragePersistedPermission> = ctx.contentResolver.persistedUriPermissions
