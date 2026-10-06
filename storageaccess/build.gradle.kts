@@ -45,7 +45,7 @@ afterEvaluate {
                 from(components["release"])
                 groupId = "io.github.whiredplanck"
                 artifactId = "storageaccess"
-                version = "1.2.1"
+                version = "2.0.0"
             }
         }
     }

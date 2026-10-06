@@ -33,7 +33,7 @@ dependencyResolutionManagement {
 2. Add dependency
 ```kts
 dependencies {
-	implementation("com.github.WhiredPlanck:StorageAccess:1.0.0")
+	implementation("com.github.WhiredPlanck:StorageAccess:2.0.0")
 }
 ```
 
